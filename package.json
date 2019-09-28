@@ -1,0 +1,41 @@
+{
+  "name": "xml2json",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Pure javascript XML to JSON converter with zero dependencies.",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.js",
+  "scripts": {
+    "test": "mocha -r ts-node/register test/**/*.spec.ts --reporter=dot",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hendt/xml2json.git"
+  },
+  "keywords": [
+    "xml2json",
+    "xmltojson",
+    "xml",
+    "to",
+    "json",
+    "json",
+    "parser",
+    "light"
+  ],
+  "author": {
+    "name": "Daniil Tomilow"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hendt/xml2json/issues"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.3",
+    "@types/mocha": "^5.2.7",
+    "chai": "^3.5.0",
+    "mocha": "^6.2.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.2"
+  }
+}

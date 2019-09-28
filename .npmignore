@@ -1,0 +1,5 @@
+*.log
+*.enc
+tsconfig.json
+test
+*.iml

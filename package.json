@@ -1,5 +1,5 @@
 {
-  "name": "xml2json",
+  "name": "@hendt/xml2json",
   "version": "1.0.1",
   "private": false,
   "description": "Pure javascript XML to JSON converter with zero dependencies.",
@@ -7,7 +7,8 @@
   "types": "./lib/index.d.js",
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.spec.ts --reporter=dot",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "tsc"
   },
   "repository": {
     "type": "git",

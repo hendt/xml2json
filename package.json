@@ -1,6 +1,6 @@
 {
   "name": "xml2json",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "description": "Pure javascript XML to JSON converter with zero dependencies.",
   "main": "./lib/index.js",

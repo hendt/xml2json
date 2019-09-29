@@ -1,4 +1,8 @@
-const defaultOptions = {
+type Options = {
+    aloneValueName?: string
+}
+
+const defaultOptions: Options = {
     aloneValueName: '_@attribute'
 };
 
@@ -7,18 +11,19 @@ const defaultOptions = {
  * @param xmlStr
  * @param options the options
  */
-export function xml2json(xmlStr: string, options = defaultOptions) {
-    options = {...defaultOptions, ...options};
-    xmlStr = cleanXML(xmlStr, options.aloneValueName);
-    return xml2jsonRecurse(xmlStr);
+export default function xml2json(xmlStr: string, options = defaultOptions) {
+    const opt = {...defaultOptions, ...options} as Required<Options>;
+    xmlStr = cleanXML(xmlStr, opt.aloneValueName);
+    return xml2jsonRecurse(xmlStr, opt);
 }
 
 /**
  * Recursive function that creates a JSON object with a given XML string.
  *
  * @param xmlStr
+ * @param options the options
  */
-function xml2jsonRecurse(xmlStr: string) {
+function xml2jsonRecurse(xmlStr: string, options: Required<Options>) {
     const obj: any = {};
     let startTagMatch;
     while ((startTagMatch = xmlStr.match(/<[^\/][^>]*>/))) {
@@ -28,7 +33,7 @@ function xml2jsonRecurse(xmlStr: string) {
 
         // account for case where additional information in the opening tag
         let closingTagMatch;
-        if (indexClosingTag == -1 && (closingTagMatch = openingTag.match(/[^<][\w+$]*/))) {
+        if (indexClosingTag == -1 && (closingTagMatch = openingTag.match(/[^<][\S+$]*/))) {
             tagName = closingTagMatch[0];
             indexClosingTag = xmlStr.indexOf('</' + tagName);
             if (indexClosingTag == -1) {
@@ -36,7 +41,7 @@ function xml2jsonRecurse(xmlStr: string) {
             }
         }
         let inner_substring = xmlStr.substring(openingTag.length, indexClosingTag);
-        const tempVal = inner_substring.match(/<[^\/][^>]*>/) ? xml2json(inner_substring) : inner_substring;
+        const tempVal = inner_substring.match(/<[^\/][^>]*>/) ? xml2json(inner_substring, options) : inner_substring;
 
         // account for array or obj
         if (obj[tagName] === undefined) {
@@ -61,15 +66,14 @@ function xml2jsonRecurse(xmlStr: string) {
  * @returns {string}
  */
 function cleanXML(xmlStr: string, aloneValueName: string) {
-    xmlStr = xmlStr.replace(/<!--[\s\S]*?-->/g, ''); //remove commented lines
-    xmlStr = xmlStr.replace(/[\n\t\r]/g, ''); //replace special characters
-    xmlStr = xmlStr.replace(/ +<|\t+</g, '<'); //replace leading spaces and tabs
-    xmlStr = xmlStr.replace(/> +|>\t+/g, '>'); //replace trailing spaces and tabs
-    xmlStr = xmlStr.replace(/<\?[^>]*\?>/g, ''); //delete docType tags
+    xmlStr = xmlStr.replace(/<!--[\s\S]*?-->/g, ''); // remove commented lines
+    xmlStr = xmlStr.replace(/[\n\t\r]/g, ''); // replace special characters
+    xmlStr = xmlStr.replace(/>[ \t]+</g, '><'); // replace leading spaces and tabs betweet elements
+    xmlStr = xmlStr.replace(/<\?[^>]*\?>/g, ''); // delete docType tags
 
-    xmlStr = replaceSelfClosingTags(xmlStr); //replace self closing tags
-    xmlStr = replaceAloneValues(xmlStr, aloneValueName); //replace the alone tags values
-    xmlStr = replaceAttributes(xmlStr); //replace attributes
+    xmlStr = replaceSelfClosingTags(xmlStr); // replace self closing tags
+    xmlStr = replaceAloneValues(xmlStr, aloneValueName); // replace the alone tags values
+    xmlStr = replaceAttributes(xmlStr); // replace attributes
 
     return xmlStr;
 }
@@ -90,11 +94,11 @@ function replaceSelfClosingTags(xmlStr: string) {
 
     for (let i = 0; i < selfClosingTags.length; i++) {
         const oldTag = selfClosingTags[i];
-        const match = oldTag.match(/[^<][\w+$]*/);
+        const match = oldTag.match(/[^<][\S+$]*/);
         if (match) {
             const tagName = match[0];
             const closingTag = "</" + tagName + ">";
-            const newTag = extracted(tagName, oldTag) + closingTag;
+            const newTag = extractAttributeValue(tagName, oldTag) + closingTag;
 
             xmlStr = xmlStr.replace(oldTag, newTag);
         }
@@ -132,17 +136,18 @@ function replaceAloneValues(xmlStr: string, aloneValueName: string) {
     return xmlStr;
 }
 
-function extracted(tagName: string, oldTag: string) {
+function extractAttributeValue(tagName: string, oldTag: string) {
     let newTag = "<" + tagName + ">";
-    const attrs = oldTag.match(/(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g);
+    const attrs = oldTag.match(/(\S+)\s?=\s?((?:"[^"]+")|(?:'[^']+'))/g);
     if (!attrs) {
         return newTag
     }
 
     for (let j = 0; j < attrs.length; j++) {
         const attr = attrs[j];
-        const attrName = attr.substring(0, attr.indexOf('='));
-        const attrValue = attr.substring(attr.indexOf('"') + 1, attr.lastIndexOf('"'));
+        const attrName = attr.substring(0, attr.indexOf('=')).trim();
+        const quote = attr[attr.length - 1];
+        const attrValue = attr.substring(attr.indexOf(quote) + 1, attr.lastIndexOf(quote));
 
         newTag += "<" + attrName + ">" + attrValue + "</" + attrName + ">";
     }
@@ -160,7 +165,7 @@ function extracted(tagName: string, oldTag: string) {
  * @returns {*}
  */
 function replaceAttributes(xmlStr: string) {
-    const tagsWithAttributes = xmlStr.match(/<[^\/][^>][^<]+\s+.[^<]+[=][^<]+>/g);
+    const tagsWithAttributes = xmlStr.match(/<[^\/><]\S+\s+[^<]+[=][^<]+>/g);
     if (!tagsWithAttributes) {
         return xmlStr
     }
@@ -170,7 +175,7 @@ function replaceAttributes(xmlStr: string) {
         const match = oldTag.match(/[^<]\S*/);
         if (match) {
             const tagName = match[0];
-            const newTag = extracted(tagName, oldTag);
+            const newTag = extractAttributeValue(tagName, oldTag);
             xmlStr = xmlStr.replace(oldTag, newTag);
         }
     }

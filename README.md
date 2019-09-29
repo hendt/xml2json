@@ -10,7 +10,7 @@ npm install @hendt/xml2json
 ## Usage
 ### Without XML attributes
 ```javascript
-import {xml2json} from '@hendt/xml2json';
+import xml2json from '@hendt/xml2json';
 
 const xml = '<person><name>John Doe</name></person>';
 const json = xml2json(xml); 
@@ -21,7 +21,7 @@ console.log(json);
 ### With XML attributes
 #### Single attribute
 ```javascript
-import {xml2json} from '@hendt/xml2json';
+import xml2json from '@hendt/xml2json';
 const xml = '<person id="1234"><name>John Doe</name></person>';
 const json = parser.xml2json(xml); 
 
@@ -30,7 +30,7 @@ console.log(json);
 ```
 #### Multiple attributes
 ```javascript
-import {xml2json} from '@hendt/xml2json';
+import xml2json from '@hendt/xml2json';
 const xml = '<person id="1234" age="30"><name>John Doe</name></person>';
 const json = parser.xml2json(xml); 
 
@@ -40,7 +40,7 @@ console.log(json);
 ### Special cases
 #### Orphan values
 ```javascript
-import {xml2json} from '@hendt/xml2json';
+import xml2json from '@hendt/xml2json';
 const xml = '<person id="1234">Something</person>';
 
 // The xml string is converted to : 
@@ -57,7 +57,7 @@ console.log(json);
 
 Custom name:
 ```javascript
-import {xml2json} from '@hendt/xml2json';
+import xml2json from '@hendt/xml2json';
 const xml = '<person id="1234">Something</person>';
 
 const json = xml2json(xml, {aloneValueName: '@value'}); 
@@ -67,7 +67,7 @@ console.log(json);
 
 #### Comments
 ```javascript
-import {xml2json} from '@hendt/xml2json';
+import xml2json from '@hendt/xml2json';
 
 const xml = '<name> <!-- some comment --> Jane Doe </name>';
 

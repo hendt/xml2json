@@ -68,7 +68,7 @@ function xml2jsonRecurse(xmlStr: string, options: Required<Options>) {
 function cleanXML(xmlStr: string, aloneValueName: string) {
     xmlStr = xmlStr.replace(/<!--[\s\S]*?-->/g, ''); // remove commented lines
     xmlStr = xmlStr.replace(/[\n\t\r]/g, ''); // replace special characters
-    xmlStr = xmlStr.replace(/>[ \t]+</g, '><'); // replace leading spaces and tabs betweet elements
+    xmlStr = xmlStr.replace(/>[ \t]+</g, '><'); // replace leading spaces and tabs between elements
     xmlStr = xmlStr.replace(/<\?[^>]*\?>/g, ''); // delete docType tags
 
     xmlStr = replaceSelfClosingTags(xmlStr); // replace self closing tags

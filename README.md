@@ -48,11 +48,11 @@ const xml = '<person id="1234">Something</person>';
 //
 // This line now contains an orphan value
 // the xml string is then converted to :
-// '<person><id>1234</id><_@ttribute>Something</_@ttribute></person>'
+// '<person><id>1234</id><_@attribute>Something</_@attribute></person>'
 
 const json = xml2json(xml); 
 console.log(json); 
-// prints '{"person": {"id": "1234", "_@ttribute": "Something"}}'
+// prints '{"person": {"id": "1234", "_@attribute": "Something"}}'
 ```
 
 Custom name:
@@ -69,7 +69,7 @@ console.log(json);
 ```javascript
 import xml2json from '@hendt/xml2json';
 
-const xml = '<name> <!-- some comment --> Jane Doe </name>';
+const xml = '<name><!-- some comment -->Jane Doe</name>';
 
 // The xml string is converted to : 
 // <name> Jane Doe </name>

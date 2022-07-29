@@ -7,6 +7,16 @@ describe('xml2json', () => {
         expect(xml2json('<person><name>John Doe</name></person>'))
             .to.deep.equal({"person": {"name": "John Doe"}});
     });
+    it('Tags in array', () => {
+        expect(xml2json('<person id="1234">Jane<name id="1234">John</name><name id="4321">Doe</name></person>'))
+          .to.deep.equal({
+            'person': {
+                '_@attribute': 'Jane',
+                'id': '1234',
+                'name': [{'_@attribute': 'John', 'id': '1234'}, {'_@attribute': 'Doe', 'id': '4321'}]
+            }
+        });
+    });
 
     describe('With XML attributes', () => {
         it('Single attribute', () => {
